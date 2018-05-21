@@ -7,6 +7,10 @@
 #addin nuget:?package=Cake.Figlet&version=1.1.0
 #addin nuget:?package=Cake.Git&version=0.17.0
 #addin nuget:?package=Cake.Gitter&version=0.8.0
+// TODO: (missing RazorEngine, Version=3.10.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a)
+// Latest RazorEngine uses this instead:
+//#addin nuget:?package=Microsoft.AspNetCore.Razor&version=1.1.2
+#addin nuget:?package=RazorEngine&version=3.10.0.0
 #addin nuget:?package=Cake.Graph&version=0.5.0
 #addin nuget:?package=Cake.Incubator&version=2.0.1
 #addin nuget:?package=Cake.Kudu&version=0.7.0
