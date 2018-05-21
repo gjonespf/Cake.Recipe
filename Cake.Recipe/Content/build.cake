@@ -486,6 +486,13 @@ public class Builder
         _action(BuildParameters.Target);
     }
 
+    public void RunVanilla()
+    {
+        BuildParameters.IsDotNetCoreBuild = false;
+        BuildParameters.IsNuGetBuild = false;
+        _action(BuildParameters.Target);
+    }
+
     public void RunDotNetCore()
     {
         BuildParameters.IsDotNetCoreBuild = true;
