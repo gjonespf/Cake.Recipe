@@ -125,12 +125,14 @@ BuildParameters.Tasks.RestoreTask = Task("Restore")
 {
     Information("Restoring {0}...", BuildParameters.SolutionFilePath);
 
-    NuGetRestore(
-        BuildParameters.SolutionFilePath,
-        new NuGetRestoreSettings
-        {
-            Source = BuildParameters.NuGetSources
-        });
+    if(IsNuGetBuild) {
+        NuGetRestore(
+            BuildParameters.SolutionFilePath,
+            new NuGetRestoreSettings
+            {
+                Source = BuildParameters.NuGetSources
+            });
+    }
 });
 
 BuildParameters.Tasks.DotNetCoreRestoreTask = Task("DotNetCore-Restore")
