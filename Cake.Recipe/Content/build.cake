@@ -123,19 +123,24 @@ BuildParameters.Tasks.CleanTask = Task("Clean")
 BuildParameters.Tasks.RestoreTask = Task("Restore")
     .Does(() =>
 {
+});
+
+BuildParameters.Tasks.RestoreTask = Task("DotNet-Restore")
+    .IsDependentOn("Restore")
+    .Does(() =>
+{
     Information("Restoring {0}...", BuildParameters.SolutionFilePath);
 
-    if(BuildParameters.IsNuGetBuild) {
-        NuGetRestore(
-            BuildParameters.SolutionFilePath,
-            new NuGetRestoreSettings
-            {
-                Source = BuildParameters.NuGetSources
-            });
-    }
+    NuGetRestore(
+        BuildParameters.SolutionFilePath,
+        new NuGetRestoreSettings
+        {
+            Source = BuildParameters.NuGetSources
+        });
 });
 
 BuildParameters.Tasks.DotNetCoreRestoreTask = Task("DotNetCore-Restore")
+    .IsDependentOn("Restore")
     .Does(() =>
 {
     var msBuildSettings = new DotNetCoreMSBuildSettings()
@@ -162,7 +167,12 @@ BuildParameters.Tasks.DotNetCoreRestoreTask = Task("DotNetCore-Restore")
 
 BuildParameters.Tasks.BuildTask = Task("Build")
     .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
+    .IsDependentOn("Restore").Does(() => {
+     });
+
+BuildParameters.Tasks.BuildTask = Task("DotNet-Build")
+    .IsDependentOn("Clean")
+    .IsDependentOn("DotNet-Restore")
     .Does<BuildData>(data => RequireTool(MSBuildExtensionPackTool, () => {
         Information("Building {0}", BuildParameters.SolutionFilePath);
 
@@ -528,7 +538,7 @@ public class Builder
 
     private static void SetupTasks(bool isDotNetCoreBuild)
     {
-        var prefix = isDotNetCoreBuild ? "DotNetCore-" : "";
+        var prefix = isDotNetCoreBuild ? "DotNetCore-" : "DotNet-";
         BuildParameters.Tasks.CreateNuGetPackagesTask.IsDependentOn(prefix + "Build");
         BuildParameters.Tasks.CreateChocolateyPackagesTask.IsDependentOn(prefix + "Build");
         BuildParameters.Tasks.TestTask.IsDependentOn(prefix + "Build");
