@@ -125,7 +125,7 @@ BuildParameters.Tasks.RestoreTask = Task("Restore")
 {
     Information("Restoring {0}...", BuildParameters.SolutionFilePath);
 
-    if(IsNuGetBuild) {
+    if(BuildParameters.IsNuGetBuild) {
         NuGetRestore(
             BuildParameters.SolutionFilePath,
             new NuGetRestoreSettings
