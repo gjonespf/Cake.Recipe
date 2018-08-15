@@ -125,7 +125,7 @@ BuildParameters.Tasks.RestoreTask = Task("Restore")
 {
 });
 
-BuildParameters.Tasks.RestoreTask = Task("DotNet-Restore")
+BuildParameters.Tasks.DotNetRestoreTask = Task("DotNet-Restore")
     .IsDependentOn("Restore")
     .Does(() =>
 {
@@ -170,7 +170,7 @@ BuildParameters.Tasks.BuildTask = Task("Build")
     .IsDependentOn("Restore").Does(() => {
      });
 
-BuildParameters.Tasks.BuildTask = Task("DotNet-Build")
+BuildParameters.Tasks.DotNetBuildTask = Task("DotNet-Build")
     .IsDependentOn("Clean")
     .IsDependentOn("DotNet-Restore")
     .Does<BuildData>(data => RequireTool(MSBuildExtensionPackTool, () => {
@@ -541,6 +541,7 @@ public class Builder
         var prefix = isDotNetCoreBuild ? "DotNetCore-" : "DotNet-";
         BuildParameters.Tasks.CreateNuGetPackagesTask.IsDependentOn(prefix + "Build");
         BuildParameters.Tasks.CreateChocolateyPackagesTask.IsDependentOn(prefix + "Build");
+        BuildParameters.Tasks.BuildTask.IsDependentOn(prefix + "Build");
         BuildParameters.Tasks.TestTask.IsDependentOn(prefix + "Build");
         BuildParameters.Tasks.DupFinderTask.IsDependentOn(prefix + "Build");
         BuildParameters.Tasks.InspectCodeTask.IsDependentOn(prefix + "Build");

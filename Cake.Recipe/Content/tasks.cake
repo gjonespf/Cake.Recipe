@@ -8,10 +8,13 @@ public class BuildTasks
     public CakeTaskBuilder ClearAppVeyorCacheTask { get; set; }
     public CakeTaskBuilder ShowInfoTask { get; set; }
     public CakeTaskBuilder CleanTask { get; set; }
+    public CakeTaskBuilder DotNetCleanTask { get; set; }
     public CakeTaskBuilder DotNetCoreCleanTask { get; set; }
     public CakeTaskBuilder RestoreTask { get; set; }
+    public CakeTaskBuilder DotNetRestoreTask { get; set; }
     public CakeTaskBuilder DotNetCoreRestoreTask { get; set; }
     public CakeTaskBuilder BuildTask { get; set; }
+    public CakeTaskBuilder DotNetBuildTask { get; set; }
     public CakeTaskBuilder DotNetCoreBuildTask { get; set; }
     public CakeTaskBuilder PackageTask { get; set; }
     public CakeTaskBuilder DefaultTask { get; set; }
