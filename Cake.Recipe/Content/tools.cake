@@ -5,7 +5,7 @@
 private const string CodecovTool = "#tool nuget:?package=codecov&version=1.0.5";
 private const string CoverallsTool = "#tool nuget:?package=coveralls.io&version=1.4.2";
 private const string GitReleaseManagerTool = "#tool nuget:?package=gitreleasemanager&version=0.7.1";
-private const string GitVersionTool = "#tool nuget:?package=GitVersion.CommandLine&version=3.6.5";
+private const string GitVersionTool = "#tool nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0014";
 private const string ReSharperTools = "#tool nuget:?package=JetBrains.ReSharper.CommandLineTools&version=2018.1.2";
 private const string ReSharperReportsTool = "#tool nuget:?package=ReSharperReports&version=0.4.0";
 private const string KuduSyncTool = "#tool nuget:?package=KuduSync.NET&version=1.3.1";
