@@ -24,9 +24,15 @@ public class BuildVersion
 
         if (BuildParameters.ShouldRunGitVersion)
         {
-            context.Information("Calculating Semantic Version...");
             var noFetch = !BuildParameters.ShouldAllowFetch;
+            // TODO better approach
+            context.Information("Testing GitVersion...");
+                context.GitVersion(new GitVersionSettings{
+                    OutputType = GitVersionOutput.BuildServer,
+                    NoFetch = noFetch
+                });
 
+            context.Information("Calculating Semantic Version...");
             assertedVersions = context.GitVersion(new GitVersionSettings{
                     OutputType = GitVersionOutput.Json,
                     NoFetch = noFetch
