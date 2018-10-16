@@ -25,41 +25,12 @@ public class BuildVersion
         if (BuildParameters.ShouldRunGitVersion)
         {
             context.Information("Calculating Semantic Version...");
-            if (!BuildParameters.IsLocalBuild || BuildParameters.IsPublishBuild || BuildParameters.IsReleaseBuild || BuildParameters.PrepareLocalRelease)
-            {
-                if(!BuildParameters.IsPublicRepository && BuildParameters.IsRunningOnAppVeyor)
-                {
-                    context.GitVersion(new GitVersionSettings{
-                        UpdateAssemblyInfoFilePath = BuildParameters.Paths.Files.SolutionInfoFilePath,
-                        UpdateAssemblyInfo = true,
-                        OutputType = GitVersionOutput.BuildServer,
-                        NoFetch = true
-                    });
-                } else {
-                    context.GitVersion(new GitVersionSettings{
-                        UpdateAssemblyInfoFilePath = BuildParameters.Paths.Files.SolutionInfoFilePath,
-                        UpdateAssemblyInfo = true,
-                        OutputType = GitVersionOutput.BuildServer
-                    });
-                }
+            var noFetch = !BuildParameters.ShouldAllowFetch;
 
-                version = context.EnvironmentVariable("GitVersion_MajorMinorPatch");
-                semVersion = context.EnvironmentVariable("GitVersion_LegacySemVerPadded");
-                informationalVersion = context.EnvironmentVariable("GitVersion_InformationalVersion");
-                milestone = string.Concat(version);
-            }
-
-            if(!BuildParameters.IsPublicRepository && BuildParameters.IsRunningOnAppVeyor)
-            {
-                assertedVersions = context.GitVersion(new GitVersionSettings{
-                        OutputType = GitVersionOutput.Json,
-                        NoFetch = true
-                });
-            } else {
-                assertedVersions = context.GitVersion(new GitVersionSettings{
-                        OutputType = GitVersionOutput.Json,
-                });
-            }
+            assertedVersions = context.GitVersion(new GitVersionSettings{
+                    OutputType = GitVersionOutput.Json,
+                    NoFetch = noFetch
+            });
 
             version = assertedVersions.MajorMinorPatch;
             semVersion = assertedVersions.LegacySemVerPadded;
@@ -68,6 +39,18 @@ public class BuildVersion
             fullSemVersion = assertedVersions.FullSemVer;
 
             context.Information("Calculated Semantic Version: {0}", semVersion);
+
+            if(BuildParameters.ShouldUpdateAssemblyVersion && BuildParameters.Paths.Files.SolutionInfoFilePath != null)
+            {
+                context.Information("Updating Assemblies Version...");
+
+                context.GitVersion(new GitVersionSettings{
+                    UpdateAssemblyInfoFilePath = BuildParameters.Paths.Files.SolutionInfoFilePath,
+                    UpdateAssemblyInfo = true,
+                    OutputType = GitVersionOutput.BuildServer,
+                    NoFetch = noFetch
+                });
+            }
         }
 
         if (string.IsNullOrEmpty(version) || string.IsNullOrEmpty(semVersion))

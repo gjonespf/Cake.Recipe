@@ -144,6 +144,8 @@ public static class BuildParameters
     public static bool ShouldExecuteGitLink { get; private set; }
     public static bool ShouldRunIntegrationTests { get; private set; }
     public static bool ShouldRunGitVersion { get; private set; }
+    public static bool ShouldAllowFetch { get; private set; }
+    public static bool ShouldUpdateAssemblyVersion { get; private set; }
 
     public static DirectoryPath WyamRootDirectoryPath { get; private set; }
     public static DirectoryPath WyamPublishDirectoryPath { get; private set; }
@@ -325,6 +327,8 @@ public static class BuildParameters
         context.Information("ShouldExecuteGitLink: {0}", ShouldExecuteGitLink);
         context.Information("ShouldRunIntegrationTests: {0}", ShouldRunIntegrationTests);
         context.Information("ShouldRunGitVersion: {0}", ShouldRunGitVersion);
+        context.Information("ShouldAllowFetch: {0}", ShouldAllowFetch);
+        context.Information("ShouldUpdateAssemblyVersion: {0}", ShouldUpdateAssemblyVersion);
         context.Information("IsRunningOnUnix: {0}", IsRunningOnUnix);
         context.Information("IsRunningOnWindows: {0}", IsRunningOnWindows);
         context.Information("IsRunningOnAppVeyor: {0}", IsRunningOnAppVeyor);
@@ -396,6 +400,8 @@ public static class BuildParameters
         bool shouldBuildNugetSourcePackage = false,
         bool shouldRunIntegrationTests = false,
         bool? shouldRunGitVersion = null,
+        bool? shouldUpdateAssemblyVersion = null,
+        bool? shouldAllowFetch = null,
         bool? transifexEnabled = null,
         TransifexMode transifexPullMode = TransifexMode.OnlyTranslated,
         int transifexPullPercentage = 60,
@@ -468,6 +474,8 @@ public static class BuildParameters
         ShouldRunDotNetCorePack = shouldRunDotNetCorePack;
         ShouldBuildNugetSourcePackage = shouldBuildNugetSourcePackage;
         ShouldRunGitVersion = shouldRunGitVersion ?? context.IsRunningOnWindows();
+        ShouldAllowFetch = shouldAllowFetch ?? !BuildParameters.IsPublicRepository && BuildParameters.IsRunningOnAppVeyor;
+        ShouldUpdateAssemblyVersion = shouldUpdateAssemblyVersion ?? solutionFilePath != null;
 
         MilestoneReleaseNotesFilePath = milestoneReleaseNotesFilePath ?? RootDirectoryPath.CombineWithFilePath("CHANGELOG.md");
         FullReleaseNotesFilePath = fullReleaseNotesFilePath ?? RootDirectoryPath.CombineWithFilePath("ReleaseNotes.md");
