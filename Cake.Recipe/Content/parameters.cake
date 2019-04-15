@@ -26,6 +26,8 @@ public static class BuildParameters
     public static bool TransifexEnabled { get; set; }
     public static bool PrepareLocalRelease { get; set; }
     public static bool TreatWarningsAsErrors { get; set; }
+    public static string MasterBranchName { get; private set; }
+    public static string DevelopBranchName { get; private set; }
 
     public static string GitterMessage
     {
@@ -162,6 +164,8 @@ public static class BuildParameters
     public static FilePath NugetConfig { get; private set; }
     public static ICollection<string> NuGetSources { get; private set; }
 
+    public static IBuildProvider BuildProvider { get; private set; }
+
     static BuildParameters()
     {
         Tasks = new BuildTasks();
@@ -272,8 +276,9 @@ public static class BuildParameters
     {
         get
         {
-            return BuildParameters.TransifexEnabled &&
-              (!BuildParameters.IsPullRequest || !BuildParameters.IsRunningOnAppVeyor);
+            return BuildParameters.TransifexEnabled && !BuildParameters.IsPullRequest
+                && (BuildParameters.IsRunningOnAppVeyor
+                    || string.Equals(BuildParameters.Target, "Transifex-Pull-Translations", StringComparison.OrdinalIgnoreCase));
         }
     }
 
@@ -421,13 +426,17 @@ public static class BuildParameters
         bool isPublicRepository = true,
         FilePath nugetConfig = null,
         ICollection<string> nuGetSources = null,
-        bool treatWarningsAsErrors = true
+        bool treatWarningsAsErrors = true,
+        string masterBranchName = "master",
+        string developBranchName = "develop"
         )
     {
         if (context == null)
         {
             throw new ArgumentNullException("context");
         }
+
+        BuildProvider = GetBuildProvider(context, buildSystem);
 
         SourceDirectoryPath = sourceDirectoryPath;
         Title = title;
@@ -511,20 +520,22 @@ public static class BuildParameters
         Configuration = context.Argument("configuration", "Release");
         PrepareLocalRelease = context.Argument("prepareLocalRelease", false);
         CakeConfiguration = context.GetConfiguration();
+        MasterBranchName = masterBranchName;
+        DevelopBranchName = developBranchName;
         IsLocalBuild = buildSystem.IsLocalBuild;
         IsRunningOnUnix = context.IsRunningOnUnix();
         IsRunningOnWindows = context.IsRunningOnWindows();
         IsRunningOnAppVeyor = buildSystem.AppVeyor.IsRunningOnAppVeyor;
-        IsPullRequest = buildSystem.AppVeyor.Environment.PullRequest.IsPullRequest;
-        IsMainRepository = StringComparer.OrdinalIgnoreCase.Equals(string.Concat(repositoryOwner, "/", repositoryName), buildSystem.AppVeyor.Environment.Repository.Name);
+        IsPullRequest = BuildProvider.PullRequest.IsPullRequest;
+        IsMainRepository = StringComparer.OrdinalIgnoreCase.Equals(string.Concat(repositoryOwner, "/", repositoryName), BuildProvider.Repository.Name);
         IsPublicRepository = isPublicRepository;
-        IsMasterBranch = StringComparer.OrdinalIgnoreCase.Equals("master", buildSystem.AppVeyor.Environment.Repository.Branch);
-        IsDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", buildSystem.AppVeyor.Environment.Repository.Branch);
-        IsReleaseBranch = buildSystem.AppVeyor.Environment.Repository.Branch.StartsWith("release", StringComparison.OrdinalIgnoreCase);
-        IsHotFixBranch = buildSystem.AppVeyor.Environment.Repository.Branch.StartsWith("hotfix", StringComparison.OrdinalIgnoreCase);
+        IsMasterBranch = StringComparer.OrdinalIgnoreCase.Equals(masterBranchName, BuildProvider.Repository.Branch);
+        IsDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals(developBranchName, BuildProvider.Repository.Branch);
+        IsReleaseBranch = BuildProvider.Repository.Branch.StartsWith("release", StringComparison.OrdinalIgnoreCase);
+        IsHotFixBranch = BuildProvider.Repository.Branch.StartsWith("hotfix", StringComparison.OrdinalIgnoreCase);
         IsTagged = (
-            buildSystem.AppVeyor.Environment.Repository.Tag.IsTag &&
-            !string.IsNullOrWhiteSpace(buildSystem.AppVeyor.Environment.Repository.Tag.Name)
+            BuildProvider.Repository.Tag.IsTag &&
+            !string.IsNullOrWhiteSpace(BuildProvider.Repository.Tag.Name)
         );
         TreatWarningsAsErrors = treatWarningsAsErrors;
         GitHub = GetGitHubCredentials(context);

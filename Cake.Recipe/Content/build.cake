@@ -336,53 +336,18 @@ public void CopyBuildOutput()
             continue;
         }
 
-        var isxUnitTestProject = false;
-        var ismsTestProject = false;
-        var isFixieProject = false;
-        var isNUnitProject = false;
-
-        // Now we need to test for whether this is a unit test project.  Currently, this is only testing for XUnit Projects.
-        // It needs to be extended to include others, i.e. NUnit, MSTest, and VSTest
+        // Now we need to test for whether this is a unit test project.
         // If this is found, move the output to the unit test folder, otherwise, simply copy to normal output folder
-
-        ICollection<ProjectAssemblyReference> references = null;
         if(!BuildParameters.IsDotNetCoreBuild)
         {
             Information("Not a .Net Core Build");
-            references = parsedProject.References;
         }
         else
         {
             Information("Is a .Net Core Build");
-            references = new List<ProjectAssemblyReference>();
         }
 
-        foreach(var reference in references)
-        {
-            Verbose("Reference Include: {0}", reference.Include);
-            if(reference.Include.ToLower().Contains("xunit.core"))
-            {
-                isxUnitTestProject = true;
-                break;
-            }
-            else if(reference.Include.ToLower().Contains("unittestframework") || reference.Include.ToLower().Contains("visualstudio.testplatform"))
-            {
-                ismsTestProject = true;
-                break;
-            }
-            else if(reference.Include.ToLower().Contains("fixie"))
-            {
-                isFixieProject = true;
-                break;
-            }
-            else if(reference.Include.ToLower().Contains("nunit.framework"))
-            {
-                isNUnitProject = true;;
-                break;
-            }
-        }
-
-        if(parsedProject.IsLibrary() && isxUnitTestProject)
+        if(parsedProject.IsLibrary() && parsedProject.IsXUnitTestProject())
         {
             Information("Project has an output type of library and is an xUnit Test Project: {0}", parsedProject.RootNameSpace);
             var outputFolder = BuildParameters.Paths.Directories.PublishedxUnitTests.Combine(parsedProject.RootNameSpace);
@@ -390,7 +355,7 @@ public void CopyBuildOutput()
             CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
             continue;
         }
-        else if(parsedProject.IsLibrary() && ismsTestProject)
+        else if(parsedProject.IsLibrary() && parsedProject.IsMSTestProject())
         {
             // We will use vstest.console.exe by default for MSTest Projects
             Information("Project has an output type of library and is an MSTest Project: {0}", parsedProject.RootNameSpace);
@@ -399,7 +364,7 @@ public void CopyBuildOutput()
             CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
             continue;
         }
-        else if(parsedProject.IsLibrary() && isFixieProject)
+        else if(parsedProject.IsLibrary() && parsedProject.IsFixieTestProject())
         {
             Information("Project has an output type of library and is a Fixie Project: {0}", parsedProject.RootNameSpace);
             var outputFolder = BuildParameters.Paths.Directories.PublishedFixieTests.Combine(parsedProject.RootNameSpace);
@@ -407,7 +372,7 @@ public void CopyBuildOutput()
             CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
             continue;
         }
-        else if(parsedProject.IsLibrary() && isNUnitProject)
+        else if(parsedProject.IsLibrary() && parsedProject.IsNUnitTestProject())
         {
             Information("Project has an output type of library and is a NUnit Test Project: {0}", parsedProject.RootNameSpace);
             var outputFolder = BuildParameters.Paths.Directories.PublishedNUnitTests.Combine(parsedProject.RootNameSpace);
@@ -469,6 +434,9 @@ BuildParameters.Tasks.UploadCoverageReportTask = Task("Upload-Coverage-Report")
 
 BuildParameters.Tasks.ReleaseNotesTask = Task("ReleaseNotes")
   .IsDependentOn("Create-Release-Notes");
+
+BuildParameters.Tasks.LabelsTask = Task("Labels")
+  .IsDependentOn("Create-Default-Labels");
 
 BuildParameters.Tasks.ClearCacheTask = Task("ClearCache")
   .IsDependentOn("Clear-AppVeyor-Cache");

@@ -51,7 +51,7 @@ BuildParameters.Tasks.UploadAppVeyorArtifactsTask = Task("Upload-AppVeyor-Artifa
 
 BuildParameters.Tasks.ClearAppVeyorCacheTask = Task("Clear-AppVeyor-Cache")
     .Does(() =>
-        RequireAddin(@"#addin nuget:?package=Cake.AppVeyor&version=3.0.0
+        RequireAddin(@"#addin nuget:?package=Cake.AppVeyor&version=3.0.0&loaddependencies=true
         AppVeyorClearCache(new AppVeyorSettings() { ApiToken = EnvironmentVariable(""TEMP_APPVEYOR_TOKEN"") },
             EnvironmentVariable(""TEMP_APPVEYOR_ACCOUNT_NAME""),
             EnvironmentVariable(""TEMP_APPVEYOR_PROJECT_SLUG""));
@@ -60,3 +60,72 @@ BuildParameters.Tasks.ClearAppVeyorCacheTask = Task("Clear-AppVeyor-Cache")
             {"TEMP_APPVEYOR_ACCOUNT_NAME", BuildParameters.AppVeyorAccountName},
             {"TEMP_APPVEYOR_PROJECT_SLUG", BuildParameters.AppVeyorProjectSlug}}
 ));
+
+///////////////////////////////////////////////////////////////////////////////
+// BUILD PROVIDER
+///////////////////////////////////////////////////////////////////////////////
+
+public class AppVeyorTagInfo : ITagInfo
+{
+    public AppVeyorTagInfo(IAppVeyorProvider appVeyor)
+    {
+        IsTag = appVeyor.Environment.Repository.Tag.IsTag;
+        Name = appVeyor.Environment.Repository.Tag.Name;
+    }
+
+    public bool IsTag { get; }
+
+    public string Name { get; }    
+}
+
+public class AppVeyorRepositoryInfo : IRepositoryInfo
+{
+    public AppVeyorRepositoryInfo(IAppVeyorProvider appVeyor)
+    {
+        Branch = appVeyor.Environment.Repository.Branch;
+        Name = appVeyor.Environment.Repository.Name;
+        Tag = new AppVeyorTagInfo(appVeyor);
+    }
+
+    public string Branch { get; }
+
+    public string Name { get; }
+
+    public ITagInfo Tag { get; }    
+}
+
+public class AppVeyorPullRequestInfo : IPullRequestInfo
+{
+    public AppVeyorPullRequestInfo(IAppVeyorProvider appVeyor)
+    {
+        IsPullRequest = appVeyor.Environment.PullRequest.IsPullRequest;
+    }
+
+    public bool IsPullRequest { get; }    
+}
+
+public class AppVeyorBuildInfo : IBuildInfo
+{
+    public AppVeyorBuildInfo(IAppVeyorProvider appVeyor)
+    {
+        Number = appVeyor.Environment.Build.Number;
+    }
+
+    public int Number { get; }    
+}
+
+public class AppVeyorBuildProvider : IBuildProvider
+{
+    public AppVeyorBuildProvider(IAppVeyorProvider appVeyor)
+    {
+        Repository = new AppVeyorRepositoryInfo(appVeyor);
+        PullRequest = new AppVeyorPullRequestInfo(appVeyor);
+        Build = new AppVeyorBuildInfo(appVeyor);
+    }
+
+    public IRepositoryInfo Repository { get; }
+
+    public IPullRequestInfo PullRequest { get; }
+
+    public IBuildInfo Build { get; }
+}
