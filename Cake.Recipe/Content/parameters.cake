@@ -137,6 +137,7 @@ public static class BuildParameters
     public static bool ShouldRunInspectCode { get; private set; }
     public static bool ShouldRunCodecov { get; private set; }
     public static bool ShouldRunDotNetCorePack { get; private set; }
+    public static bool ShouldRunIngestIssues { get; private set; }
     public static bool ShouldPublishMyGet { get; private set; }
     public static bool ShouldPublishChocolatey { get; private set; }
     public static bool ShouldPublishNuGet { get; private set; }
@@ -402,6 +403,7 @@ public static class BuildParameters
         bool shouldRunInspectCode = true,
         bool shouldRunCodecov = false,
         bool shouldRunDotNetCorePack = false,
+        bool shouldRunIngestIssues = true,
         bool shouldBuildNugetSourcePackage = false,
         bool shouldRunIntegrationTests = false,
         bool? shouldRunGitVersion = null,
@@ -481,6 +483,7 @@ public static class BuildParameters
         ShouldRunInspectCode = shouldRunInspectCode;
         ShouldRunCodecov = shouldRunCodecov;
         ShouldRunDotNetCorePack = shouldRunDotNetCorePack;
+        ShouldRunIngestIssues = shouldRunIngestIssues;
         ShouldBuildNugetSourcePackage = shouldBuildNugetSourcePackage;
         ShouldRunGitVersion = shouldRunGitVersion ?? context.IsRunningOnWindows();
         ShouldAllowFetch = shouldAllowFetch ?? !BuildParameters.IsPublicRepository && BuildParameters.IsRunningOnAppVeyor;

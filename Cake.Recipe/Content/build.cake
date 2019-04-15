@@ -196,14 +196,17 @@ BuildParameters.Tasks.DotNetBuildTask = Task("DotNet-Build")
             MSBuild(BuildParameters.SolutionFilePath, msbuildSettings);
 
             // Parse warnings.
-            var issues = ReadIssues(
-                MsBuildIssuesFromFilePath(
-                    BuildParameters.Paths.Files.BuildLogFilePath,
-                    MsBuildXmlFileLoggerFormat),
-                data.RepositoryRoot);
+            if(BuildParameters.ShouldRunIngestIssues)
+            {
+                var issues = ReadIssues(
+                    MsBuildIssuesFromFilePath(
+                        BuildParameters.Paths.Files.BuildLogFilePath,
+                        MsBuildXmlFileLoggerFormat),
+                    data.RepositoryRoot);
 
-            Information("{0} MsBuild warnings are found.", issues.Count());
-            data.AddIssues(issues);
+                Information("{0} MsBuild warnings are found.", issues.Count());
+                data.AddIssues(issues);
+            }
         }
         else
         {
