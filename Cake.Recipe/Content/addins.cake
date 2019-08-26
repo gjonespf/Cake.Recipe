@@ -18,7 +18,6 @@
 // #addin nuget:?package=RazorLight&version=2.0.0-beta1&prerelease=true
 //
 //
-#addin nuget:?package=RazorLight&version=2.0.0-beta1&prerelease&loaddependencies=true
 #addin nuget:?package=Cake.Graph&version=0.8.0
 #addin nuget:?package=Cake.Incubator&version=5.0.1
 #addin nuget:?package=Cake.Kudu&version=0.10.0
@@ -36,6 +35,11 @@
 
 // Needed for Cake.Graph
 //#addin nuget:?package=RazorEngine&version=3.10.0&loaddependencies=true
+#addin nuget:?package=System.Collections.Immutable&version=1.3.1
+#addin nuget:?package=System.Reflection.Metadata&version=1.4.2
+#addin nuget:?package=Microsoft.CodeAnalysis.Common&version=2.3.1
+
+#addin nuget:?package=RazorLight&version=2.0.0-beta1&prerelease//&loaddependencies=true
 
 
 Action<string, IDictionary<string, string>> RequireAddin = (code, envVars) => {
