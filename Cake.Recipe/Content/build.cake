@@ -454,7 +454,7 @@ public void CopyBuildOutput()
             {
                 var outputFolder = BuildParameters.Paths.Directories.PublishedLibraries.Combine(parsedProject.RootNameSpace);
                 EnsureDirectoryExists(outputFolder);
-                Information(parsedProject.OutputPath.FullPath);
+                //Information(parsedProject.OutputPath.FullPath);
 
                 // TODO: Confirm this works correectly for multi-targeting
                 foreach(var outPath in parsedProject.OutputPaths) {
