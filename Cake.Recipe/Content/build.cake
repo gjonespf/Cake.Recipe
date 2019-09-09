@@ -294,12 +294,16 @@ public void CopyBuildOutput()
             continue;
         }
 
-        if(parsedProject.OutputPath == null || parsedProject.RootNameSpace == null || parsedProject.OutputType == null)
+        if(//parsedProject.OutputPath == null || 
+            parsedProject.RootNameSpace == null || parsedProject.OutputType == null)
         {
-            Information("OutputPath: {0}", parsedProject.OutputPath);
+            // Information("OutputPath: {0}", parsedProject.OutputPath);
             Information("RootNameSpace: {0}", parsedProject.RootNameSpace);
             Information("OutputType: {0}", parsedProject.OutputType);
             throw new Exception(string.Format("Unable to parse project file correctly: {0}", project.Path));
+        }
+        foreach(var outPath in parsedProject.OutputPaths) {
+            Information("OutputPath: {0}", outPath);
         }
 
         // If the project is an exe, then simply copy all of the contents to the correct output folder
@@ -340,7 +344,13 @@ public void CopyBuildOutput()
             }
             else
             {
-                CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
+                // TODO: Confirm this works correectly for multi-targeting
+                foreach(var outPath in parsedProject.OutputPaths) {
+                    Information("OutputPath: {0}", outPath);
+                    CopyFiles(GetFiles(outPath.FullPath + "/**/*"), outputFolder, true);
+                }
+
+                //CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
             }
 
             continue;
@@ -362,7 +372,13 @@ public void CopyBuildOutput()
             Information("Project has an output type of library and is an xUnit Test Project: {0}", parsedProject.RootNameSpace);
             var outputFolder = BuildParameters.Paths.Directories.PublishedxUnitTests.Combine(parsedProject.RootNameSpace);
             EnsureDirectoryExists(outputFolder);
-            CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
+
+            // TODO: Confirm this works correectly for multi-targeting
+            foreach(var outPath in parsedProject.OutputPaths) {
+                Information("OutputPath: {0}", outPath);
+                CopyFiles(GetFiles(outPath.FullPath + "/**/*"), outputFolder, true);
+            }
+            //CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
             continue;
         }
         else if(parsedProject.IsLibrary() && parsedProject.IsMSTestProject())
@@ -371,7 +387,14 @@ public void CopyBuildOutput()
             Information("Project has an output type of library and is an MSTest Project: {0}", parsedProject.RootNameSpace);
             var outputFolder = BuildParameters.Paths.Directories.PublishedVSTestTests.Combine(parsedProject.RootNameSpace);
             EnsureDirectoryExists(outputFolder);
-            CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
+
+            // TODO: Confirm this works correectly for multi-targeting
+            foreach(var outPath in parsedProject.OutputPaths) {
+                Information("OutputPath: {0}", outPath);
+                CopyFiles(GetFiles(outPath.FullPath + "/**/*"), outputFolder, true);
+            }
+
+            //CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
             continue;
         }
         else if(parsedProject.IsLibrary() && parsedProject.IsFixieTestProject())
@@ -379,7 +402,14 @@ public void CopyBuildOutput()
             Information("Project has an output type of library and is a Fixie Project: {0}", parsedProject.RootNameSpace);
             var outputFolder = BuildParameters.Paths.Directories.PublishedFixieTests.Combine(parsedProject.RootNameSpace);
             EnsureDirectoryExists(outputFolder);
-            CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
+
+            // TODO: Confirm this works correectly for multi-targeting
+            foreach(var outPath in parsedProject.OutputPaths) {
+                Information("OutputPath: {0}", outPath);
+                CopyFiles(GetFiles(outPath.FullPath + "/**/*"), outputFolder, true);
+            }
+            //CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
+
             continue;
         }
         else if(parsedProject.IsLibrary() && parsedProject.IsNUnitTestProject())
@@ -387,7 +417,14 @@ public void CopyBuildOutput()
             Information("Project has an output type of library and is a NUnit Test Project: {0}", parsedProject.RootNameSpace);
             var outputFolder = BuildParameters.Paths.Directories.PublishedNUnitTests.Combine(parsedProject.RootNameSpace);
             EnsureDirectoryExists(outputFolder);
-            CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
+
+            // TODO: Confirm this works correectly for multi-targeting
+            foreach(var outPath in parsedProject.OutputPaths) {
+                Information("OutputPath: {0}", outPath);
+                CopyFiles(GetFiles(outPath.FullPath + "/**/*"), outputFolder, true);
+            }
+
+            //CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
             continue;
         }
         else
@@ -403,7 +440,14 @@ public void CopyBuildOutput()
                     var outputFolder = BuildParameters.Paths.Directories.PublishedLibraries.Combine(parsedProject.RootNameSpace).Combine(outputPath.GetDirectoryName());
                     EnsureDirectoryExists(outputFolder);
                     Information(outputPath);
-                    CopyFiles(GetFiles(outputPath + "/**/*"), outputFolder, true);
+
+                    // TODO: Confirm this works correectly for multi-targeting
+                    foreach(var outPath in parsedProject.OutputPaths) {
+                        Information("OutputPath: {0}", outPath);
+                        CopyFiles(GetFiles(outPath.FullPath + "/**/*"), outputFolder, true);
+                    }
+
+                    //CopyFiles(GetFiles(outputPath + "/**/*"), outputFolder, true);
                 }
             }
             else
@@ -411,7 +455,14 @@ public void CopyBuildOutput()
                 var outputFolder = BuildParameters.Paths.Directories.PublishedLibraries.Combine(parsedProject.RootNameSpace);
                 EnsureDirectoryExists(outputFolder);
                 Information(parsedProject.OutputPath.FullPath);
-                CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
+
+                // TODO: Confirm this works correectly for multi-targeting
+                foreach(var outPath in parsedProject.OutputPaths) {
+                    Information("OutputPath: {0}", outPath);
+                    CopyFiles(GetFiles(outPath.FullPath + "/**/*"), outputFolder, true);
+                }
+
+                //CopyFiles(GetFiles(parsedProject.OutputPath.FullPath + "/**/*"), outputFolder, true);
             }
             continue;
         }
