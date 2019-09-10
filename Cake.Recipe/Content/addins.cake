@@ -16,7 +16,7 @@
 #addin nuget:?package=Microsoft.AspNetCore.Razor&version=2.0.0
 #addin nuget:?package=Microsoft.AspNetCore.Razor.Language&version=2.0.0
 #addin nuget:?package=Microsoft.AspNetCore.Razor.Runtime&version=2.0.0
-#addin nuget:?package=Microsoft.CodeAnalysis.Razor&version=2.0.0
+//#addin nuget:?package=Microsoft.CodeAnalysis.Razor&version=2.0.0
 #addin nuget:?package=RazorLight&version=2.0.0-beta1&prerelease=true
 // Needed for Cake.Graph
 //#addin nuget:?package=RazorEngine&version=3.10.0&loaddependencies=true
